@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import math
 
 class WallMeasurement:
     def __init__(self, orientation, distance):
@@ -11,6 +12,18 @@ class Direction(Enum):
     EAST = 0
     WEST = 180
 
+MotorPollDelay = 0.05
+USSensorPort = 2
+LeftMotorPort = "A"
+RightMotorPort = "D"
+MotorPowerLimit = 80
+MotorSpeedLimit = 270
+MotorTurnSpeed = 90
+WheelRadius = 0.028 #check
+HalfWheelBase = 0.11 #check
+DistToDeg = (180 / (math.pi * WheelRadius))
+OrientToDeg = HalfWheelBase/WheelRadius
+    
 MapWidth = 0 #check
 MapLength = 0 #check
 MapWidthInGrids = 49
@@ -25,4 +38,3 @@ USSensorMedianFilterWindowSize = 5
 USSensorErrorValue = 255.0
 WallDistanceDataPointCount = 20
 USSensorOffsetFromRobotCentre = 2 #distance from us sensor to centre of robot
-
