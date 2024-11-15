@@ -1,18 +1,17 @@
 import time
 import math
 from . import statics
-from utils import brick
-from utils import BP, EV3UltrasonicSensor, Motor, TouchSensor, wait_ready_sensors
-from BrickPi import *
+from brickUtils import brick
+from brickUtils.brick import BP, EV3UltrasonicSensor, Motor, TouchSensor, wait_ready_sensors
 
-def wait_for_motor(Motor):
+def wait_for_motor(motor):
     # Wait for motor to spin or slow down
     while math.isclose(motor.get_speed(), 0):
         time.sleep(statics.MotorPollDelay)
-    while not math.isclose(motor.get_speed, 0):
+    while not math.isclose(motor.get_speed(), 0):
         time.sleep(statics.MotorPollDelay)
 
-def init_motor(Motor):
+def init_motor(motor):
         motor.reset_encoder()
         motor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
         motor.set_power(0)
@@ -28,7 +27,6 @@ def moveForward(distance, speed):
     RIGHT_MOTOR.set_position_relative(int(distance*statics.DistToDeg))
 
     wait_for_motor(RIGHT_MOTOR)
-
 
 def moveForwardUntilObstacle():
     while US_SENSOR.get_distance() > 0.1:
@@ -47,8 +45,6 @@ def moveBackward(distance, speed):
      RIGHT_MOTOR.set_position_relative(-int(distance*statics.DistToDeg))
 
      wait_for_motor(RIGHT_MOTOR)
-          
-          
 
 def rotate(angle):
     LEFT_MOTOR.set_limits(statics.MotorPowerLimit, statics.MotorTurnSpeed)
@@ -67,6 +63,3 @@ def turnLeft(angle=90):
 
 def turnRight(angle=90):
     rotate(-angle)
-
-
-
