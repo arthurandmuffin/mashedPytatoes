@@ -79,6 +79,8 @@ class Map:
         waterGridCell = self.getMapCell(Map.coordsToGrid(waterCoords))
         waterGridCell.isWater = True
 
+        self.FloodFillWater(waterCoords)
+
     def getMapCell(self, gridCoord):
         return self.grid[gridCoord[0]][gridCoord[1]]
     
@@ -90,6 +92,24 @@ class Map:
     def coordsToGrid(coords):
         return [math.floor(x / statics.GridCellDimension) for x in coords]
 
-    def FloodFillWater():
-        raise None
+    def FloodFillWater(self):
+        for x in range(self.gridWidthCount):
+            for y in range(self.gridLengthCount):
+                if not self.grid[x,y].isWater:
+                    if self.checkSurroundingWater(x, y):
+                        self.grid[x][y].isWater = True
     
+    def isSurroundingWater(self, x, y):
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        count = 0
+
+        for dx, dy in directions:
+            ex, ey = x + dx, y + dy
+            if 0 <= ex < self.gridLengthCount and 0 <= ey < self.gridWidthCount:
+                if self.grid[ex][ey].isWater:
+                    count += 1
+                if count >= 3:
+                    return True
+                
+        return False
+
