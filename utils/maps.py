@@ -96,7 +96,7 @@ class Map:
         for x in range(self.gridWidthCount):
             for y in range(self.gridLengthCount):
                 if not self.grid[x,y].isWater:
-                    if self.checkSurroundingWater(x, y):
+                    if self.isSurroundingWater(x, y):
                         self.grid[x][y].isWater = True
     
     def isSurroundingWater(self, x, y):
@@ -112,4 +112,3 @@ class Map:
                     return True
                 
         return False
-
