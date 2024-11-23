@@ -12,17 +12,37 @@ class Direction(Enum):
     EAST = 0
     WEST = 180
 
-MotorPollDelay = 0.05
-USSensorPort = 2
+class ColourTargetType(Enum):
+    GROUND = "Ground"
+    CUBE = "Cube"
+
+class GroundColours(Enum):
+    WATER = "Water"
+    GRIDLINE = "Gridline"
+    GRASS = "Grass"
+
+class CubeColours(Enum):
+    PURPLE = "PurpleCube"
+    ORANGE = "OrangeCube"
+    GREEN = "GreenCube"
+    YELLOW = "YellowCube"
+
+FrontUSSensorPort = 2
+SideUSSensorPort = 0
+LeftColourPort = 0
+RightColourPort = 0
 LeftMotorPort = "A"
 RightMotorPort = "D"
+ArmMotorPort = ""
+ClawMotorPort = ""
+
+MotorPollDelay = 0.05
 MotorPowerLimit = 80
 MotorSpeedLimit = 270
 MotorTurnSpeed = 90
-WheelRadius = 0.028 #check
-HalfWheelBase = 0.11 #check
+WheelRadius = 2.2
+WheelBase = 7.7
 DistToDeg = (180 / (math.pi * WheelRadius))
-OrientToDeg = HalfWheelBase/WheelRadius
     
 MapWidth = 0 #check
 MapLength = 0 #check
@@ -30,11 +50,29 @@ MapWidthInGrids = 49
 MapLengthInGrids = 49
 GridCellDimension = 2.54 #width/length of 1 map cell
 LeftColourSensorLocation = []
-RightColourSEnsorLocation = []
+RightColourSensorLocation = []
 
 RightAngleOrientations = [0, 90, 180, 270]
 
 USSensorMedianFilterWindowSize = 5
 USSensorErrorValue = 255.0
 WallDistanceDataPointCount = 20
-USSensorOffsetFromRobotCentre = 2 #distance from us sensor to centre of robot
+USSensorOffsetFromRobotCentre = 2 # distance from us sensor to centre of robot
+
+CruisingPower = -50
+CruisingSpeed = -100
+DeviationLimit = 1
+TrackingThreshold = 20
+SpeedCorrectionFactor = 1.2
+
+# CRANE SUBSYSTEM
+armIdle = 0
+clawIdle = -80
+
+armPickup = -100
+armDrop = 100
+armUnload = -200
+
+clawOpen = 70
+clawClose = 120
+clawUnload = -180
