@@ -59,6 +59,9 @@ class Map:
         for rowX, yValues in rowBoundaries.items():
             for y in range(min(yValues), max(yValues) + 1):
                 self.grid[rowX][y].visited = True
+                
+    def MarkVisitedPath():
+        return None
 
     def UpdateCurrentLocation():
         raise None
@@ -66,8 +69,15 @@ class Map:
     def DistanceFromWallsToCurrentGrid():
         raise None
     
-    def AddObstacle():
-        raise None
+    def MarkObstacle(self, colourSensorLocation, currentGrid = None, currentCoords = None):
+        if currentGrid is None and currentCoords is None: raise ValueError
+        
+        if currentCoords is None:
+            currentCoords = Map.gridToCoords(currentGrid)
+            
+        obstacleCoords = [currentCoord + sensorLocation for currentCoord, sensorLocation in zip(currentCoords, colourSensorLocation)]
+        obstacleGridCell = self.getMapCell(Map.coordsToGrid(obstacleCoords))
+        obstacleGridCell.isObstacle = True
     
     def MarkWater(self, colourSensorLocation, currentGrid = None, currentCoords = None):
         if currentGrid is None and currentCoords is None: raise ValueError
