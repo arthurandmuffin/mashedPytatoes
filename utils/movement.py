@@ -94,6 +94,7 @@ def moveForwardUntilObstacle(leftMotor, rightMotor, frontUS, sideUS, leftCS, rig
                 print("Stopped at measured: " + str(frontDistance))
                 stopMotors(leftMotor, rightMotor)
                 print(obstacle.getObstacleColour(leftMotor, rightMotor, leftCS, rightCS)) #test
+                moveBackwardToPickup(leftMotor, rightMotor)
                 break
             elif frontDistance < statics.TrackingThreshold:
                 targetObstacle = [frontDistance, leftMotor.get_encoder(), rightMotor.get_encoder()]
@@ -105,6 +106,7 @@ def moveForwardUntilObstacle(leftMotor, rightMotor, frontUS, sideUS, leftCS, rig
                     print("Stopped at theoretical: " + str(theoreticalDistance))
                     stopMotors(leftMotor, rightMotor)
                     print(obstacle.getObstacleColour(leftMotor, rightMotor, leftCS, rightCS)) #test
+                    moveBackwardToPickup(leftMotor, rightMotor)
                     break
                     #function
         time.sleep(0.3)

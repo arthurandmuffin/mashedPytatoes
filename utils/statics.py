@@ -49,8 +49,8 @@ WheelBase = 7.7 #check
 DistToDeg = (180 / (math.pi * WheelRadius))
 StraightLineOffset = 1
     
-MapWidth = 0 #check
-MapLength = 0 #check
+MapWidth = 50 #check
+MapLength = 50 #check
 MapWidthInGrids = 49
 MapLengthInGrids = 49
 GridCellDimension = 2.54 #width/length of 1 map cell
@@ -71,6 +71,7 @@ TrackingThreshold = 20
 PickupThreshold = 5
 SpeedCorrectionFactor = 1.2
 CorrectionTimer = 1
+DistanceTravelledCorrectionFactor = 1
 
 # CRANE SUBSYSTEM
 armIdle = 0

@@ -11,25 +11,30 @@ def colourSensorObstacles():
     return
 
 def getObstacleColour(leftMotor, rightMotor, leftCS, rightCS):
-    movement.rotateLeft(leftMotor, rightMotor, -15, 30, 30)
-    sleep(0.3)
-    if isinstance(colour.getObject(rightCS.get_value()), statics.CubeColours):
-        movement.rotateRight(leftMotor, rightMotor, -15, 30, 30)
-        sleep(0.3)
-        return colour.getObject(rightCS.get_value())
-    
-    movement.rotateLeft(leftMotor, rightMotor, 15, 30, 30)
-    sleep(0.3)
-    if isinstance(colour.getObject(rightCS.get_value()), statics.CubeColours):
-        movement.rotateRight(leftMotor, rightMotor, -30, 30, 30)
-        sleep(0.3)
-        return colour.getObject(rightCS.get_value())
-    
-    movement.rotateLeft(leftMotor, rightMotor, 15, 30, 30)
-    sleep(0.3)
-    if isinstance(colour.getObject(rightCS.get_value()), statics.CubeColours):
-        movement.rotateRight(leftMotor, rightMotor, -45, 30, 30)
-        sleep(0.3)
-        return colour.getObject(rightCS.get_value())
-    
-    return "fucked"
+    for i in range(3):
+        movement.rotateLeft8(leftMotor, rightMotor)
+        sleep(0.5)
+        rightCSReading = colour.getObject(rightCS.get_value())
+        if isinstance(rightCSReading, statics.CubeColours):
+            for _ in range(i):
+                movement.rotateFromRightColor(leftMotor, rightMotor)
+                sleep(0.5)
+            movement.moveBackwardToPickup(leftMotor, rightMotor)
+            sleep(1.2)
+            return rightCSReading
+
+    for k in range(3):
+        movement.rotateRight8(leftMotor, rightMotor)
+        sleep(0.5)
+        leftCSReading = colour.getObject(leftCS.get_value())
+        if isinstance(leftCSReading, statics.CubeColours):
+            for _ in range(k):
+                movement.rotateFromLeftColor(leftMotor, rightMotor)
+                sleep(0.5)
+            movement.moveBackwardToPickup(leftMotor, rightMotor)
+            sleep(1.2)
+            return leftCSReading
+        
+    movement.moveBackwardToPickup(leftMotor, rightMotor)
+    sleep(1.2)
+    return None

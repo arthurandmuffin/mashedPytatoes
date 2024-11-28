@@ -62,20 +62,34 @@ class Map:
                 self.grid[rowX][y].visited = True
                 
     def MarkVisitedPath(self, initialLeft, initialRight, currentLeft, currentRight, robotDimensions):
-        orientation_radians = math.radians(self.currentOrientation)
+        #Distance travelled
         wheelRotations = (statistics.mean([currentLeft - initialLeft, currentRight - initialRight]) / 360)
-        distanceTravelled = wheelRotations * statics.WheelCircumference * statics.StraightLineOffset
-        initialCoords = Map.gridToCoords([self.currentLocationX, self.currentLocationY])
-        currentCoords = [initialCoords[0] + math.cos(orientation_radians), initialCoords[1] + math.sin(orientation_radians)]
+        distanceTravelled = (wheelRotations * statics.WheelCircumference * statics.StraightLineOffset) * statics.DistanceTravelledCorrectionFactor
+        
+        #Starting coordinates
+        initialGrid = [self.currentLocationX, self.currentLocationY]
+        initialCoords = Map.gridToCoords(initialGrid)
+        
+        #Current coordinates
+        orientation_radians = math.radians(self.currentOrientation)
+        print("Radians?" + str(orientation_radians))
+        currentCoords = [initialCoords[0] - math.sin(orientation_radians) * distanceTravelled, initialCoords[1] + math.cos(orientation_radians) * distanceTravelled]
+        
+        #Centre point
         centrePointGrids = Map.coordsToGrid([(initialCoords[0] + currentCoords[0]) / 2, (initialCoords[1] + currentCoords[1]) / 2])
-        
-        self.markCurrentLocationAsVisited(self.currentOrientation, [robotDimensions[0], round(math.dist(initialCoords, currentCoords) / statics.GridCellDimension)], 0)
-        
-        
+        if not self.UpdateCurrentLocation(centrePointGrids):
+            print("Grid fucked")
+        print([robotDimensions[0], round((math.dist(initialCoords, currentCoords) / 2) / statics.GridCellDimension)])
+        self.markCurrentLocationAsVisited(self.currentOrientation, [robotDimensions[0], round((math.dist(initialCoords, currentCoords) / 2) / statics.GridCellDimension)], 0)
+        self.UpdateCurrentLocation(initialGrid)
         return None
 
-    def UpdateCurrentLocation(grid):
-        raise None
+    def UpdateCurrentLocation(self, grid):
+        if grid[0] < 0 or grid[1] < 0 or grid[0] > self.gridWidthCount - 1 or grid[1] > self.gridLengthCount - 1:
+            return False
+        self.currentLocationX, self.currentLocationY = grid[0], grid[1]
+        print("X: " + str(self.currentLocationX) + ", Y: " + str(self.currentLocationY))
+        return True
     
     def DistanceFromWallsToCurrentGrid():
         raise None
