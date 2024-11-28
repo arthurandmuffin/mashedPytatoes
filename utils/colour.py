@@ -8,7 +8,6 @@ def getObject(rgbValues):
         return classifyFloor(rgbValues)
     else:
         return classifyCube(rgbValues)
-    
 
 def classifyTarget(rgbValues):
     if rgbValues == None:

@@ -120,7 +120,7 @@ def keepStraight(leftMotor, rightMotor, sideUS, referenceDistance):
 
 def motorSpeedCorrection(motor):
     motor.set_dps(statics.SpeedCorrectionFactor * statics.CruisingSpeed)
-    time.sleep(1)
+    time.sleep(statics.CorrectionTimer)
     motor.set_dps(statics.CruisingSpeed)
     
 def pickupLeft(leftMotor, rightMotor):
@@ -128,7 +128,7 @@ def pickupLeft(leftMotor, rightMotor):
 
 def pickupRight(leftMotor, rightMotor):
     return
-    
+
 def getObstacleDistance(targetObstacle, leftEncoder, rightEncoder):
     return targetObstacle[0] - abs(mean([leftEncoder - targetObstacle[1], rightEncoder - targetObstacle[2]]) / 360) * statics.WheelCircumference
 

@@ -47,13 +47,14 @@ WheelRadius = 2.2 #check
 WheelCircumference = 2 * math.pi * WheelRadius
 WheelBase = 7.7 #check
 DistToDeg = (180 / (math.pi * WheelRadius))
+StraightLineOffset = 1
     
 MapWidth = 0 #check
 MapLength = 0 #check
 MapWidthInGrids = 49
 MapLengthInGrids = 49
 GridCellDimension = 2.54 #width/length of 1 map cell
-LeftColourSensorLocation = []
+LeftColourSensorLocation = [2, 3]
 RightColourSensorLocation = []
 
 RightAngleOrientations = [0, 90, 180, 270]
@@ -69,6 +70,7 @@ DeviationLimit = 1
 TrackingThreshold = 20
 PickupThreshold = 5
 SpeedCorrectionFactor = 1.2
+CorrectionTimer = 1
 
 # CRANE SUBSYSTEM
 armIdle = 0
