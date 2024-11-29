@@ -11,7 +11,7 @@ def colourSensorObstacles():
     return
 
 def getObstacleColour(leftMotor, rightMotor, leftCS, rightCS):
-    for i in range(3):
+    for i in range(4):
         movement.rotateLeft8(leftMotor, rightMotor)
         sleep(0.5)
         rightCSReading = colour.getObject(rightCS.get_value())
@@ -23,7 +23,7 @@ def getObstacleColour(leftMotor, rightMotor, leftCS, rightCS):
             sleep(1.2)
             return rightCSReading
 
-    for k in range(3):
+    for k in range(4):
         movement.rotateRight8(leftMotor, rightMotor)
         sleep(0.5)
         leftCSReading = colour.getObject(leftCS.get_value())
