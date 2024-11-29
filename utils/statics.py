@@ -75,12 +75,12 @@ CorrectionTimer = 1
 DistanceTravelledCorrectionFactor = 1
 
 # CRANE SUBSYSTEM
-armIdle = 0
-clawIdle = -80
+armIdle = -70
+clawIdle = 60
 
-armPickup = -90
+armPickup = -95
 armDrop = 95
-armUnload = -200
+armUnload = -220
 
 clawOpen = 50
 clawClose = 120

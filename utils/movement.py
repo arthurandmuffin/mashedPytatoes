@@ -139,8 +139,8 @@ def rotateLeft90(LeftMotor, RightMotor):
     RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     
-    RightMotor.set_position_relative(-1 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
-    LeftMotor.set_position_relative(0.8 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+    RightMotor.set_position_relative(-0.95 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(0.95 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
 
 def rotateRight90(LeftMotor, RightMotor):
     #Play with the same values as rotateLeft90, if cant move back into place, make the function rotateRight45, and we'll
@@ -148,8 +148,8 @@ def rotateRight90(LeftMotor, RightMotor):
     RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     
-    RightMotor.set_position_relative(1.4 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
-    LeftMotor.set_position_relative(-0.9 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+    RightMotor.set_position_relative(1.05 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(-1.05 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
 
 def rotateLeft8(LeftMotor, RightMotor):
     #Use the same code as rotate90, just make angleToMotorRotation 10 or appropriate small angle, rename function accordingly
@@ -157,29 +157,29 @@ def rotateLeft8(LeftMotor, RightMotor):
     LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     
     RightMotor.set_position_relative(-1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
-    LeftMotor.set_position_relative(0.75 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
 
 def rotateRight8(LeftMotor, RightMotor):
     #Use the same code as rotate90, just make angleToMotorRotation 10 or appropriate small angle, rename function accordingly
     RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     
-    RightMotor.set_position_relative(1.4 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
-    LeftMotor.set_position_relative(-0.9 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    RightMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(-1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
 
 def rotateFromLeftColor(LeftMotor, RightMotor):
     RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     
-    RightMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
-    LeftMotor.set_position_relative(-0.75 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    RightMotor.set_position_relative(-0.95 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(0.95 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
 
 def rotateFromRightColor(LeftMotor, RightMotor):
     RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
     
     RightMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
-    LeftMotor.set_position_relative(-0.75 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(-1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
 
 def angleToMotorRotation(angle, wheelBase, wheelRadius):
     angleInRadians = angle * math.pi / 180
@@ -194,7 +194,8 @@ def moveBackwardToPickup(LeftMotor, RightMotor):
     RightMotor.set_limits(statics.MotorPowerLimit, -statics.MotorSpeedLimit)
     LeftMotor.set_limits(statics.MotorPowerLimit, -statics.MotorSpeedLimit)
     
-    LeftMotor.set_dps(-statics.CruisingSpeed)
     RightMotor.set_dps(-statics.CruisingSpeed)
+    time.sleep(0.5)
+    LeftMotor.set_dps(-statics.CruisingSpeed)
     time.sleep(1)
     stopMotors(LeftMotor, RightMotor)

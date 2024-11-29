@@ -1,5 +1,6 @@
-from utils import statics
+from utils import statics, movement
 from time import sleep
+from brickUtils.brick import Motor
 
 # Run at the beginning of every lab sessions
 def findStandardZero(motor):
@@ -23,7 +24,7 @@ def idle(armMotor, clawMotor):
     armMotor.set_position(statics.armIdle)
     clawMotor.set_position(statics.clawIdle)
 
-def pickup(armMotor, clawMotor):
+def pickup(armMotor, clawMotor, leftMotor, rightMotor):
     idle(armMotor, clawMotor)
     sleep(1)
     clawMotor.set_position(statics.clawOpen) # 1. open claw
@@ -31,6 +32,10 @@ def pickup(armMotor, clawMotor):
     armMotor.set_position(statics.armPickup) # 2. lower arm
     sleep(2)
     clawMotor.set_position(statics.clawClose) # 3. close claw
+
+    for i in range(0,3):
+        movement.moveBackwardToPickup(leftMotor, rightMotor)
+
     sleep(1)
     armMotor.set_position(statics.armDrop) # 4. bring cube up over the storage unit
     sleep(3)
