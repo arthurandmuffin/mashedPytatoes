@@ -56,6 +56,7 @@ MapLengthInGrids = 49
 GridCellDimension = 2.54 #width/length of 1 map cell
 LeftColourSensorLocation = [2, 3]
 RightColourSensorLocation = []
+WaterMaxTraceDistance = 3
 
 RightAngleOrientations = [0, 90, 180, 270]
 
