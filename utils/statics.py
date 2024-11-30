@@ -28,8 +28,8 @@ class CubeColours(Enum):
     YELLOW = "YellowCube"
     
     def isPoop(self):
-        return self in {CubeColours.PURPLE, CubeColours.ORANGE}
-
+        # return self in {CubeColours.PURPLE, CubeColours.ORANGE} # yo whatttt
+        return self in {CubeColours.YELLOW, CubeColours.ORANGE}
 FrontUSSensorPort = 2
 SideUSSensorPort = 0
 LeftColourPort = 0
@@ -63,13 +63,13 @@ RightAngleOrientations = [0, 90, 180, 270]
 USSensorMedianFilterWindowSize = 5
 USSensorErrorValue = 255.0
 WallDistanceDataPointCount = 20
-USSensorOffsetFromRobotCentre = 2 #distance from us sensor to centre of robot
+USSensorOffsetFromRobotCentre = 2 # distance from us sensor to centre of robot
 
 CruisingPower = -50
-CruisingSpeed = -100
+CruisingSpeed = -130
 DeviationLimit = 1
 TrackingThreshold = 20
-PickupThreshold = 5
+PickupThreshold = 6
 SpeedCorrectionFactor = 1.2
 CorrectionTimer = 1
 DistanceTravelledCorrectionFactor = 1

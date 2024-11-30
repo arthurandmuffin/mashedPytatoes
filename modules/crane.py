@@ -36,11 +36,10 @@ def pickup(armMotor, clawMotor, leftMotor, rightMotor):
     for i in range(0,3):
         movement.moveBackwardToPickup(leftMotor, rightMotor)
 
-    sleep(1)
     armMotor.set_position(statics.armDrop) # 4. bring cube up over the storage unit
     sleep(3)
     clawMotor.set_position(statics.clawOpen) # 5. drop cube into storage unit
-    sleep(3)
+    sleep(1.5)
     idle(armMotor, clawMotor)
     
 def unload(armMotor, clawMotor):

@@ -1,12 +1,15 @@
 from utils import statics
 
-def getObject(rgbValues):
+def getColour(rgbValues):
     if rgbValues == None:
         return None
+    # colour is GROUND or CUBE
     targetType = classifyTarget(rgbValues)
     if targetType == statics.ColourTargetType.GROUND:
+        # GROUND is WATER, GRIDLINE or GRASS
         return classifyFloor(rgbValues)
     else:
+        # CUBE is PURPLE, ORANGE, GREEN OR YELLOW
         return classifyCube(rgbValues)
 
 def classifyTarget(rgbValues):
