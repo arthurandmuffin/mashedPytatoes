@@ -1,8 +1,13 @@
 import time
 import math
+from statistics import mean
+
 from . import statics
 from brickUtils import brick
 from brickUtils.brick import BP, EV3UltrasonicSensor, Motor, TouchSensor, wait_ready_sensors
+from utils import colour
+from utils import obstacle
+from modules import crane
 
 def wait_for_motor(motor):
     # Wait for motor to spin or slow down
@@ -12,54 +17,191 @@ def wait_for_motor(motor):
         time.sleep(statics.MotorPollDelay)
 
 def init_motor(motor):
-        motor.reset_encoder()
-        motor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
-        motor.set_power(0)
+    motor.reset_encoder()
+    motor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    motor.set_power(0)
 
-def moveForward(distance, speed):
-    LEFT_MOTOR.set_dps(speed)
-    RIGHT_MOTOR.set_dps(speed)
-
-    LEFT_MOTOR.set_limits(statics.MotorPowerLimit, speed)
-    RIGHT_MOTOR.set_limits(statics.MotorPowerLimit, speed)
-
-    LEFT_MOTOR.set_position_relative(int(distance*statics.DistToDeg))
-    RIGHT_MOTOR.set_position_relative(int(distance*statics.DistToDeg))
-
-    wait_for_motor(RIGHT_MOTOR)
-
-def moveForwardUntilObstacle():
-    while US_SENSOR.get_distance() > 0.1:
-        time.sleep(statics.MotorPollDelay)
+def moveForwardUntilObstacle(leftMotor, rightMotor, frontUS, sideUS, leftCS, rightCS, distance, navMap):
+    if distance == None:
+        distance = math.inf
+    #Get distance to wall before anything starts
+    referenceDistance = sideUS.get_value()
+    while referenceDistance == None:
+        print(referenceDistance)
+        time.sleep(0.3)
+        referenceDistance = sideUS.get_value()
     
-    stopMotors()
+    #Initial encoder, for marking path as visited later on map
+    initialLeft, initialRight = leftMotor.get_encoder(), rightMotor.get_encoder()
+    
+    #Obstacle being tracked
+    targetObstacle = None
+    
+    #Start moving
+    leftMotor.set_dps(statics.CruisingSpeed)
+    rightMotor.set_dps(statics.CruisingSpeed)
+    while getTravelledDistance(initialLeft, initialRight, leftMotor.get_encoder(), rightMotor.get_encoder()) <= distance:
+        keepStraight(leftMotor, rightMotor, sideUS, referenceDistance)
 
-def moveBackward(distance, speed):
-     LEFT_MOTOR.set_dps(speed)
-     RIGHT_MOTOR.set_dps(speed)
+        objectL = colour.getObject(rightCS.get_value())
+        objectR = colour.getObject(leftCS.get_value())
+        
+        #Colour sensor sees cube / poop / water, refactor into another function when possible? # of passed vars w/ motors?
+        if isinstance(objectL, statics.CubeColours):
+            if objectL.isPoop():
+                print("Left CS: shit")
+                stopMotors(leftMotor, rightMotor)
+                pickupLeft(leftMotor, rightMotor)
+                return
+            else:
+                print("Left CS obstacle cube")
+                stopMotors(leftMotor, rightMotor)
+                currentCoords = navMap.MarkVisitedPath(initialLeft, initialRight, leftMotor.get_encoder(), rightMotor.get_encoder())
+                navMap.MarkObstacle(statics.LeftColourSensorLocation, None, currentCoords)
+                return
+        elif isinstance(objectL, statics.GroundColours.WATER):
+            print("Left CS water")
+            stopMotors(leftMotor, rightMotor)
+            currentCoords = navMap.MarkVisitedPath(initialLeft, initialRight, leftMotor.get_encoder(), rightMotor.get_encoder())
+            navMap.MarkWater(statics.LeftColourSensorLocation, None, currentCoords)
+            return
+        
+        #Same thing, for right side CS
+        if isinstance(objectR, statics.CubeColours):
+            if objectR.isPoop():
+                print("Right CS: shit")
+                stopMotors(leftMotor, rightMotor)
+                pickupLeft(leftMotor, rightMotor)
+                return
+            else:
+                print("Right CS obstacle cube")
+                stopMotors(leftMotor, rightMotor)
+                currentCoords = navMap.MarkVisitedPath(initialLeft, initialRight, leftMotor.get_encoder(), rightMotor.get_encoder())
+                navMap.MarkObstacle(statics.RightColourSensorLocation, None, currentCoords)
+                return
+        elif isinstance(objectR, statics.GroundColours.WATER):
+            print("Right CS water")
+            stopMotors(leftMotor, rightMotor)
+            currentCoords = navMap.MarkVisitedPath(initialLeft, initialRight, leftMotor.get_encoder(), rightMotor.get_encoder())
+            navMap.MarkWater(statics.RightColourSensorLocation, None, currentCoords)
+            return
 
-     LEFT_MOTOR.set_limits(statics.MotorPowerLimit, speed)
-     RIGHT_MOTOR.set_limits(statics.MotorPowerLimit, speed)
+        # Track obstacle in front, if close enough
+        frontDistance = frontUS.get_value()
+        print("front distance: " + str(frontDistance))
+        if targetObstacle == None:
+            if frontDistance < statics.TrackingThreshold:
+                targetObstacle = [frontDistance, leftMotor.get_encoder(), rightMotor.get_encoder()]
+                print("init " + str(targetObstacle))
+        else:
+            if frontDistance < statics.PickupThreshold:
+                print("Stopped at measured: " + str(frontDistance))
+                stopMotors(leftMotor, rightMotor)
+                print(obstacle.getObstacleColour(leftMotor, rightMotor, leftCS, rightCS)) #test
+                moveBackwards(leftMotor, rightMotor)
+                break
+            elif frontDistance < statics.TrackingThreshold:
+                targetObstacle = [frontDistance, leftMotor.get_encoder(), rightMotor.get_encoder()]
+                print(targetObstacle) #DEBUG
+            else:
+                theoreticalDistance = getObstacleDistance(targetObstacle, leftMotor.get_encoder(), rightMotor.get_encoder())
+                print("theory " + str(theoreticalDistance))
+                if theoreticalDistance < statics.PickupThreshold:
+                    print("Stopped at theoretical: " + str(theoreticalDistance))
+                    stopMotors(leftMotor, rightMotor)
+                    print(obstacle.getObstacleColour(leftMotor, rightMotor, leftCS, rightCS)) #test
+                    moveBackwards(leftMotor, rightMotor)
+                    break
+                    #function
+        time.sleep(0.1)
 
-     LEFT_MOTOR.set_position_relative(-int(distance*statics.DistToDeg))
-     RIGHT_MOTOR.set_position_relative(-int(distance*statics.DistToDeg))
+def keepStraight(leftMotor, rightMotor, sideUS, referenceDistance):
+    distanceToWall = sideUS.get_value()
+    if (referenceDistance - distanceToWall) < -statics.DeviationLimit:
+        print("Veering left")
+        motorSpeedCorrection(leftMotor)
+    elif (referenceDistance - distanceToWall) > statics.DeviationLimit:
+        print("Veering right")
+        motorSpeedCorrection(rightMotor)
 
-     wait_for_motor(RIGHT_MOTOR)
+def motorSpeedCorrection(motor):
+    motor.set_dps(statics.SpeedCorrectionFactor * statics.CruisingSpeed)
+    time.sleep(statics.CorrectionTimer)
+    motor.set_dps(statics.CruisingSpeed)
+    
+def pickupLeft(leftMotor, rightMotor):
+    return
 
-def rotate(angle):
-    LEFT_MOTOR.set_limits(statics.MotorPowerLimit, statics.MotorTurnSpeed)
-    RIGHT_MOTOR.set_limits(statics.MotorPowerLimit, statics.MotorTurnSpeed)
+def pickupRight(leftMotor, rightMotor):
+    return
 
-    LEFT_MOTOR.set_position_relative(-int(angle * statics.OrientToDeg))
-    RIGHT_MOTOR.set_position_relative(int(angle * statics.OrientToDeg))
-    wait_for_motor(RIGHT_MOTOR)
+def getTravelledDistance(initLeft, initRight, leftEncoder, rightEncoder):
+    return abs(mean([leftEncoder - initLeft, rightEncoder - initRight]) / 360) * statics.WheelCircumference
 
-def stopMotors():
-    LEFT_MOTOR.set_dps(0)
-    RIGHT_MOTOR.set_dps(0)
+def getObstacleDistance(targetObstacle, leftEncoder, rightEncoder):
+    return targetObstacle[0] - abs(mean([leftEncoder - targetObstacle[1], rightEncoder - targetObstacle[2]]) / 360) * statics.WheelCircumference
 
-def turnLeft(angle=90):
-    rotate(angle)
+def rotateLeft90(LeftMotor, RightMotor):
+    #Values to play with: multiplying powerlimit by some factor, same for the result of angleToMotorRotation (currently 1.42)
+    RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    
+    RightMotor.set_position_relative(-0.95 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(0.95 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
 
-def turnRight(angle=90):
-    rotate(-angle)
+def rotateRight90(LeftMotor, RightMotor):
+    #Play with the same values as rotateLeft90, if cant move back into place, make the function rotateRight45, and we'll
+    #encapsulate this function under another rotateRight90
+    RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    
+    RightMotor.set_position_relative(1.05 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(-1.05 * angleToMotorRotation(90, statics.WheelBase, statics.WheelRadius))
+
+def rotateLeft8(LeftMotor, RightMotor):
+    #Use the same code as rotate90, just make angleToMotorRotation 10 or appropriate small angle, rename function accordingly
+    RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    
+    RightMotor.set_position_relative(-1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+
+def rotateRight8(LeftMotor, RightMotor):
+    #Use the same code as rotate90, just make angleToMotorRotation 10 or appropriate small angle, rename function accordingly
+    RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    
+    RightMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(-1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+
+def rotateFromLeftColor(LeftMotor, RightMotor):
+    RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    
+    RightMotor.set_position_relative(-0.95 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(0.95 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+
+def rotateFromRightColor(LeftMotor, RightMotor):
+    RightMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, statics.MotorSpeedLimit)
+    
+    RightMotor.set_position_relative(1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+    LeftMotor.set_position_relative(-1 * angleToMotorRotation(8, statics.WheelBase, statics.WheelRadius))
+
+def angleToMotorRotation(angle, wheelBase, wheelRadius):
+    angleInRadians = angle * math.pi / 180
+    distanceTravelled = angleInRadians * wheelBase
+    return 360 * (distanceTravelled / (2 * math.pi * wheelRadius))
+
+def stopMotors(LeftMotor, RightMotor):
+    LeftMotor.set_dps(0)
+    RightMotor.set_dps(0)
+    
+def moveBackwards(LeftMotor, RightMotor):
+    RightMotor.set_limits(statics.MotorPowerLimit, -statics.MotorSpeedLimit)
+    LeftMotor.set_limits(statics.MotorPowerLimit, -statics.MotorSpeedLimit)
+
+    RightMotor.set_dps(-statics.CruisingSpeed)
+    LeftMotor.set_dps(-statics.CruisingSpeed)
+    time.sleep(0.6)
+    stopMotors(LeftMotor, RightMotor)

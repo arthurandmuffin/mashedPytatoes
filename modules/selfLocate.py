@@ -1,9 +1,9 @@
-from ..utils import calculations, movement, maps, statics
+from utils import calculations, movement, maps, statics
 
 from statistics import mean
 
 def SelfLocate(currentOrientation, motorL, motorR, usSensor):
-    getDistanceFromWalls = sorted(getDistanceFromWalls(currentOrientation, motorL, motorR, usSensor), key=lambda x: x[1])[:2]
+    distancesFromWalls = sorted(getDistanceFromWalls(currentOrientation, motorL, motorR, usSensor), key=lambda x: x[1])[:2]
     orientationMap = {
         statics.Direction.EAST: lambda distance: (statics.MapWidthInGrids - (distance // statics.GridCellDimension) - 1, statics.MapWidth - distance),
         statics.Direction.NORTH: lambda distance: (distance // statics.GridCellDimension, distance),
@@ -14,7 +14,7 @@ def SelfLocate(currentOrientation, motorL, motorR, usSensor):
     xGrid, yGrid = None, None
     xCoord, yCoord = None, None
 
-    for orientation, distance in getDistanceFromWalls:
+    for orientation, distance in distancesFromWalls:
         if orientation in [statics.Direction.EAST, statics.Direction.WEST]:
             xGrid, xCoord = orientationMap[orientation](distance)
         elif orientation in [statics.Direction.NORTH, statics.Direction.SOUTH]:

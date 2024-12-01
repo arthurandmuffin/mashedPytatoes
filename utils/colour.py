@@ -1,10 +1,22 @@
+from utils import statics
+
+def getObject(rgbValues):
+    if rgbValues == None:
+        return None
+    targetType = classifyTarget(rgbValues)
+    if targetType == statics.ColourTargetType.GROUND:
+        return classifyFloor(rgbValues)
+    else:
+        return classifyCube(rgbValues)
 
 def classifyTarget(rgbValues):
+    if rgbValues == None:
+        return None
     avg = sum(rgbValues[:3]) / 3
     if avg <= 30.17:
-        return "Ground"
+        return statics.ColourTargetType.GROUND
     else:
-        return "Cube"
+        return statics.ColourTargetType.CUBE
 
 def classifyFloor(rgbValues):
     R = rgbValues[0]
@@ -12,35 +24,35 @@ def classifyFloor(rgbValues):
     B = rgbValues[2]
     if G <= 13.50:
         if R <= 7.50:
-            return "Water"
+            return statics.GroundColours.WATER
         else:
             if G <= 12.50:
-                return "Gridline"
+                return statics.GroundColours.GRIDLINE
             else:
                 if R <= 13.00:
-                    return "Grass"
+                    return statics.GroundColours.GRASS
                 else:
-                    return "Gridline"
+                    return statics.GroundColours.GRIDLINE
     else:
         if R <= 14.50:
-            return "Grass"
+            return statics.GroundColours.GRASS
         else:
             if B <= 6.00:
-                return "Gridline"
+                return statics.GroundColours.GRIDLINE
             else:
-                return "Grass"
+                return statics.GroundColours.GRASS
 
 def classifyCube(rgbValues):
     R = rgbValues[0]
     G = rgbValues[1]
     B = rgbValues[2]
-    if R <= 137.50:
+    if R <= 100:
         if R <= 39.00:
-            return "GreenCube"
+            return statics.CubeColours.GREEN
         else:
-            return "PurpleCube"
+            return statics.CubeColours.PURPLE
     else:
         if B <= 33.00:
-            return "YellowCube"
+            return statics.CubeColours.YELLOW
         else:
-            return "OrangeCube"
+            return statics.CubeColours.ORANGE
