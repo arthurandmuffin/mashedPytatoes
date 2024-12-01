@@ -28,8 +28,9 @@ class CubeColours(Enum):
     YELLOW = "YellowCube"
     
     def isPoop(self):
-        return self in {CubeColours.PURPLE, CubeColours.ORANGE}
+        return self in {CubeColours.YELLOW, CubeColours.ORANGE}
 
+#Ports
 FrontUSSensorPort = 2
 SideUSSensorPort = 0
 LeftColourPort = 0
@@ -39,6 +40,7 @@ RightMotorPort = "D"
 ArmMotorPort = ""
 ClawMotorPort = ""
 
+#Robot dimensions
 MotorPollDelay = 0.05
 MotorPowerLimit = 80
 MotorSpeedLimit = 270
@@ -48,15 +50,21 @@ WheelCircumference = 2 * math.pi * WheelRadius
 WheelBase = 7.7 #check
 DistToDeg = (180 / (math.pi * WheelRadius))
 StraightLineOffset = 1
+#Whole width is 8
+RobotGridWidth = 4 #madeup
+#Whole length is 12
+RobotGridLength = 6 #madeup
     
-MapWidth = 50 #check
-MapLength = 50 #check
-MapWidthInGrids = 49
-MapLengthInGrids = 49
+#Map dimensions
+MapWidth = 121.9 #check
+MapLength = 121.9 #check
+MapWidthInGrids = 48
+MapLengthInGrids = 48
 GridCellDimension = 2.54 #width/length of 1 map cell
 LeftColourSensorLocation = [2, 3]
 RightColourSensorLocation = []
 WaterMaxTraceDistance = 3
+MaximumUnvisitedClumpSize = 20
 
 RightAngleOrientations = [0, 90, 180, 270]
 
@@ -65,6 +73,7 @@ USSensorErrorValue = 255.0
 WallDistanceDataPointCount = 20
 USSensorOffsetFromRobotCentre = 2 #distance from us sensor to centre of robot
 
+#Movement
 CruisingPower = -50
 CruisingSpeed = -100
 DeviationLimit = 1

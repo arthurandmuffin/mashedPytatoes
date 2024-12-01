@@ -1,8 +1,21 @@
-from utils import statics, maps
+from utils import movement, colour, statics, maps
+from time import sleep
 
-#creates a map
-navMap = maps.Map(20, 20, 10, 10, 90)
+from brickUtils.brick import BP, EV3UltrasonicSensor, Motor, wait_ready_sensors, reset_brick, EV3ColorSensor
+from modules import selfLocate, crane, navigation
 
-navMap.markCurrentLocationAsVisited(45, [2, 3], 2)
-navMap.print_grid()
+leftMotor = Motor("B")
+rightMotor = Motor("C")
 
+CLAW = Motor("D")
+ARM = Motor("A")
+
+frontUS = EV3UltrasonicSensor(1)
+sideUS = EV3UltrasonicSensor(4)
+
+leftCS= EV3ColorSensor(2)
+rightCS = EV3ColorSensor(3)
+
+navMap = maps.Map(48, 48, 5, 5, 90)
+
+navigation.Navigatefuckingeverything(leftMotor, rightMotor, ARM, CLAW, leftCS, rightCS, frontUS, sideUS, navMap)

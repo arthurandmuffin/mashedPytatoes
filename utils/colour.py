@@ -46,7 +46,7 @@ def classifyCube(rgbValues):
     R = rgbValues[0]
     G = rgbValues[1]
     B = rgbValues[2]
-    if R <= 137.50:
+    if R <= 100:
         if R <= 39.00:
             return statics.CubeColours.GREEN
         else:

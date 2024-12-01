@@ -98,7 +98,7 @@ class Map:
         
         if currentCoords is None:
             currentCoords = Map.gridToCoords(currentGrid)
-            
+        orientations = [[0, ][90, -1, 1]]
         obstacleCoords = [currentCoord + sensorLocation for currentCoord, sensorLocation in zip(currentCoords, colourSensorLocation)]
         obstacleGridCell = self.getMapCell(Map.coordsToGrid(obstacleCoords))
         obstacleGridCell.isObstacle = True
@@ -122,7 +122,6 @@ class Map:
                 cellX, cellY = grid[0] + x, grid[1] + y
                 if 0 <= cellX < self.gridWidthCount and 0 <= cellY < self.gridLengthCount and self.grid[cellX][cellY].isWater:
                     res.append([cellX, cellY])
-        
         return res
     
     def traceWaterCells(self, grid, nearbyWaterCells):
@@ -179,6 +178,11 @@ class Map:
 
     def getMapCell(self, gridCoord):
         return self.grid[gridCoord[0]][gridCoord[1]]
+    
+    def ValidGrid(self, grid):
+        if 0 <= grid[0] < self.gridWidthCount and 0 <= grid[1] < self.gridLengthCount:
+            return True
+        return False
     
     @staticmethod
     # Takes in [xgrid, ygrid] returns [xcoord, ycoord]
