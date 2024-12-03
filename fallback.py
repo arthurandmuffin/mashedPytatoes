@@ -16,10 +16,15 @@ sideUS = EV3UltrasonicSensor(4)
 leftCS= EV3ColorSensor(2)
 rightCS = EV3ColorSensor(3)
 
-navMap = maps.Map(48, 48, 25, 25, 90)
-
+navMap = maps.Map(48, 48, 5, 5, 90)
+wait_ready_sensors(True)
+coord = (11, 14)
+orientation = statics.Direction.EAST
+#crane.findStandardZero(CLAW)
+ARM.set_limits(50, 100)
+CLAW.set_limits(50, 100)
 #crane.idle(ARM, CLAW)
-
-navigation.Navigatefuckingeverything(leftMotor, rightMotor, ARM, CLAW, leftCS, rightCS, frontUS, sideUS, navMap)
-
 #movement.stopMotors(leftMotor, rightMotor)
+distanceTravelled = movement.moveForwardFallback(leftMotor, rightMotor, ARM, CLAW, frontUS, sideUS, leftCS, rightCS, None)
+print(distanceTravelled)
+#reset_brick()

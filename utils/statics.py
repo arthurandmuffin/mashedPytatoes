@@ -11,6 +11,12 @@ class Direction(Enum):
     SOUTH = 270
     EAST = 0
     WEST = 180
+    
+    def isXAxis(self):
+        return self in {Direction.NORTH, Direction.SOUTH}
+    
+    def isYAxis(self):
+        return self in {Direction.WEST, Direction.EAST}
 
 class ColourTargetType(Enum):
     GROUND = "Ground"
@@ -54,6 +60,7 @@ StraightLineOffset = 1
 RobotGridWidth = 4 #madeup
 #Whole length is 12
 RobotGridLength = 6 #madeup
+DistanceToFloor = 16.5 #CHECK (fallback)
     
 #Map dimensions
 MapWidth = 121.9 #check
@@ -64,7 +71,7 @@ GridCellDimension = 2.54 #width/length of 1 map cell
 LeftColourSensorLocation = [2, 3]
 RightColourSensorLocation = []
 WaterMaxTraceDistance = 3
-MaximumUnvisitedClumpSize = 20
+MaximumUnvisitedClumpSize = 50
 
 RightAngleOrientations = [0, 90, 180, 270]
 
@@ -78,18 +85,19 @@ CruisingPower = -50
 CruisingSpeed = -100
 DeviationLimit = 1
 TrackingThreshold = 20
-PickupThreshold = 5
+PickupThreshold = 5.5
+TheoryPickupThreshold = 11
 SpeedCorrectionFactor = 1.2
 CorrectionTimer = 1
 DistanceTravelledCorrectionFactor = 1
 
 # CRANE SUBSYSTEM
-armIdle = 0
-clawIdle = -80
+armIdle = -70
+clawIdle = 60
 
-armPickup = -90
+armPickup = -95
 armDrop = 95
-armUnload = -200
+armUnload = -220
 
 clawOpen = 50
 clawClose = 120

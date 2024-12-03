@@ -88,7 +88,7 @@ class Map:
         print([robotDimensions[0], round((math.dist(initialCoords, currentCoords) / 2) / statics.GridCellDimension)])
         self.markCurrentLocationAsVisited(self.currentOrientation, [robotDimensions[0], round((math.dist(initialCoords, currentCoords) / 2) / statics.GridCellDimension)], 0)
         self.UpdateCurrentLocation(initialGrid)
-        return None
+        return [self.currentLocationX, self.currentLocationY]
     
     def DistanceFromWallsToCurrentGrid():
         raise None
@@ -98,8 +98,15 @@ class Map:
         
         if currentCoords is None:
             currentCoords = Map.gridToCoords(currentGrid)
-        orientations = [[0, ][90, -1, 1]]
-        obstacleCoords = [currentCoord + sensorLocation for currentCoord, sensorLocation in zip(currentCoords, colourSensorLocation)]
+            
+        if self.currentOrientation == statics.Direction.NORTH:
+            obstacleCoords = [currentCoords[0] - colourSensorLocation[1], currentCoords[1] + colourSensorLocation[0]]
+        elif self.currentOrientation == statics.Direction.SOUTH:
+            obstacleCoords = [currentCoords[0] + colourSensorLocation[1], currentCoords[1] + colourSensorLocation[0]]
+        elif self.currentOrientation == statics.Direction.EAST:
+            obstacleCoords = [currentCoords[0] - colourSensorLocation[0], currentCoords[1] - colourSensorLocation[1]]
+        elif self.currentOrientation == statics.Direction.WEST:
+            obstacleCoords = [currentCoords[0] + colourSensorLocation[0], currentCoords[1] + colourSensorLocation[1]]
         obstacleGridCell = self.getMapCell(Map.coordsToGrid(obstacleCoords))
         obstacleGridCell.isObstacle = True
     
@@ -109,9 +116,16 @@ class Map:
         if currentCoords is None:
             currentCoords = Map.gridToCoords(currentGrid)
         
-        waterCoords = [currentCoord + sensorLocation for currentCoord, sensorLocation in zip(currentCoords, colourSensorLocation)]
+        if self.currentOrientation == statics.Direction.NORTH:
+            waterCoords = [currentCoords[0] - colourSensorLocation[1], currentCoords[1] + colourSensorLocation[0]]
+        elif self.currentOrientation == statics.Direction.SOUTH:
+            waterCoords = [currentCoords[0] + colourSensorLocation[1], currentCoords[1] + colourSensorLocation[0]]
+        elif self.currentOrientation == statics.Direction.EAST:
+            waterCoords = [currentCoords[0] - colourSensorLocation[0], currentCoords[1] - colourSensorLocation[1]]
+        elif self.currentOrientation == statics.Direction.WEST:
+            waterCoords = [currentCoords[0] + colourSensorLocation[0], currentCoords[1] + colourSensorLocation[1]]
         waterGrid = Map.coordsToGrid(waterCoords)
-        waterGridCell = self.getMapCell(waterGrid)
+        waterGridCell = self.getMapCell(Map.coordsToGrid(waterCoords))
         waterGridCell.isWater = True
         self.traceWaterCells(waterGrid, self.nearbyWaterCells(waterGrid, statics.WaterMaxTraceDistance))
         

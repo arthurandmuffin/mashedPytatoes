@@ -33,9 +33,9 @@ def pickup(armMotor, clawMotor):
     clawMotor.set_position(statics.clawClose) # 3. close claw
     sleep(1)
     armMotor.set_position(statics.armDrop) # 4. bring cube up over the storage unit
-    sleep(3)
+    sleep(2)
     clawMotor.set_position(statics.clawOpen) # 5. drop cube into storage unit
-    sleep(3)
+    sleep(1)
     idle(armMotor, clawMotor)
     
 def unload(armMotor, clawMotor):
