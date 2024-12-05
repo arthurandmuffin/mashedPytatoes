@@ -1,3 +1,5 @@
+# Called by main.py, navigates the map, everything else is downstream from here
+
 from utils import maps, statics, movement
 
 import heapq
@@ -8,34 +10,58 @@ from time import sleep
 #   2. Flood edge lakes + unvisitable areas?
 #   3. Bridge?? Only visit on way back (extra thing to handle), recognize bridge (how?)
 
-def Navigatefuckingeverything(leftMotor, rightMotor, armMotor, clawMotor, leftCS, rightCS, frontUS, sideUS, navMap):
-    shitCount = 0
+#Main navigation function (call from main)
+def NavigateMap(leftMotor, rightMotor, armMotor, clawMotor, leftCS, rightCS, frontUS, sideUS, navMap):
+    poopCount = 0
     pathQueue = []
-    movement.moveForwardUntilObstacle() #need to change this to handle distance too?, pass shitcount
+    movement.moveForwardUntilObstacle(leftMotor, rightMotor, armMotor, clawMotor, frontUS, sideUS, leftCS, rightCS, None, navMap) #need to change this to handle distance too?, pass shitcount
     pathQueue = visitNearestUnknown(navMap)
-    while shitCount <= 6:
+    while poopCount <= 6:
         if len(pathQueue) == 0:
             pathQueue = visitNearestUnknown(navMap)
             continue
         nextPath = pathQueue.pop()
         movement.moveForwardUntilObstacle(leftMotor, rightMotor, frontUS, sideUS, leftCS, rightCS, getDistance(nextPath), navMap)
-        reorient(nextPath, pathQueue[0])
+        if len(pathQueue) != 0:
+            reorient(nextPath, pathQueue[0])
+        poopCount += 1
     
-    #go back? set home coords statics
-    pathHome = pathPlanToPaths(pathToCell(navMap, (0, 50)))
+    #Return to start
+    pathHome = pathPlanToPaths(pathToCell(navMap, (10, 10)))
+    print(pathHome)
     while len(pathHome) != 0:
-        movement.moveForwardUntilObstacle(pathHome.pop())
+        nextPath = pathHome.pop(0)
+        movement.moveForwardUntilObstacle(nextPath)
+        reorient(nextPath, pathHome[0])
 
-#rewrite this shit, straight ass
+#Get path to nearest unknown cluster
 def visitNearestUnknown(navMap):
-    x, y = navMap.currentLocationX, navMap.currentLocationY
-    random = 20
-    newTarget = largestClump(navMap, nearbyUnvisitedCells(navMap, random))
-    while len(newTarget) == 0:
+    pathPlan = None
+    random = 10
+    tried = []
+    while pathPlan == None:
+        nearbyUnvisited = nearbyUnvisitedCells(navMap, random, tried)
+        print("Nearby Unvisited: " + str(nearbyUnvisited))
+        newTarget = largestClump(navMap, nearbyUnvisited)
+        while len(newTarget) == 0:
+            random += 10
+            nearbyUnvisited = nearbyUnvisitedCells(navMap, random, tried)
+            print("Nearby Unvisited: " + str(nearbyUnvisited))
+            newTarget = largestClump(navMap, nearbyUnvisitedCells(navMap, random, tried))
+        while pathPlan == None and len(newTarget) > 0:
+            trying = newTarget.pop(0)
+            tried.append(trying)
+            pathPlan = pathToCell(navMap, trying)
+            print("TARGET: " + str(newTarget))
+            print("PATH: " + str(pathPlan))
+            if pathPlan == None:
+                print("no path")
+                
         random += 10
-        newTarget = largestClump(navMap, nearbyUnvisitedCells(navMap, random))
-    pathPlanToPaths(pathToCell(navMap, newTarget[0]))
+    print(pathPlan)
+    return pathPlanToPaths(pathPlan)
     
+#Largest cluster
 def largestClump(navMap, unvisitedCells):
     visited = set() #processed, not actually visited
     largestClump = [] #for now just take 1st element as target, possible optimisation to avoid turns?
@@ -52,8 +78,8 @@ def largestClump(navMap, unvisitedCells):
                 visited.add(current)
                 clump.append(current)
                 
-                for x, y in neighbours(current):
-                    if not navMap.grid[x][y].visited and [x, y] not in visited:
+                for x, y in neighbours(navMap, current):
+                    if not navMap.grid[x][y].visited and (x, y) not in visited:
                         queue.append((x, y))
                         
                 if len(clump) > cutoff:
@@ -61,22 +87,22 @@ def largestClump(navMap, unvisitedCells):
             
             if len(clump) > len(largestClump):
                 largestClump = clump
+    largestClump.sort(key = lambda coord: manhattanDistance(coord, (navMap.currentLocationX, navMap.currentLocationY)))
     
     return largestClump
-                
-def neighbours(grid):
-    x, y = grid
-    return [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
-    
-def nearbyUnvisitedCells(navMap, distanceThreshold):
+
+# Nearby unvisited cells based on current location
+def nearbyUnvisitedCells(navMap, distanceThreshold, tried):
     res = []
+    print("X: " + str(navMap.currentLocationX) + "   Y: " + str(navMap.currentLocationY))
     for x in range(-distanceThreshold, distanceThreshold + 1):
         for y in range(-distanceThreshold, distanceThreshold + 1):
-            cellX, cellY = navMap.grid[0] + x, navMap.grid[1] + y
-            if 0 <= cellX < navMap.gridWidthCount and 0 <= cellY < navMap.gridLengthCount and not navMap.grid[cellX][cellY].visited:
+            cellX, cellY = navMap.currentLocationX + x, navMap.currentLocationY + y
+            if 0 <= cellX < navMap.gridWidthCount and 0 <= cellY < navMap.gridLengthCount and not navMap.grid[cellX][cellY].visited and (cellX, cellY) not in tried:
                 res.append((cellX, cellY))
     return res
 
+# A* pathfinding algorithm, takes into account of space needed when rotating vs straight line
 def pathToCell(navMap, target):
     initX, initY = navMap.currentLocationX, navMap.currentLocationY
     initAxis = orientationToAxis(navMap.currentOrientation)
@@ -181,3 +207,15 @@ def getDistance(path):
     coord1 = path[0]
     coord2 = path[1]
     return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
+
+
+def manhattanDistance(coord1, coord2):
+    return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
+                
+def neighbours(navMap, grid):
+    x, y = grid
+    res = []
+    for coord in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]:
+        if navMap.ValidGrid(coord):
+            res.append(coord)
+    return res

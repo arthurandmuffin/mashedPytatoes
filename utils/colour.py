@@ -1,3 +1,14 @@
+# Classify colour sensor reading as
+# Floor: 
+#    - Water
+#    - Grass
+#    - Gridline
+# Cube:
+#    - Green Cube
+#    - Purple Cube
+#    - Yellow Cube
+#    - Orange Cube
+
 from utils import statics
 
 def getObject(rgbValues):
@@ -13,7 +24,7 @@ def classifyTarget(rgbValues):
     if rgbValues == None:
         return None
     avg = sum(rgbValues[:3]) / 3
-    if avg <= 30.17:
+    if avg <= 36:
         return statics.ColourTargetType.GROUND
     else:
         return statics.ColourTargetType.CUBE
