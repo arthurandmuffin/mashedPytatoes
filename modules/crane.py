@@ -1,4 +1,6 @@
-from utils import statics
+# Crane to pick up and unload cubes into the storage system
+
+from utils import statics, movement
 from time import sleep
 
 # Run at the beginning of every lab sessions
@@ -23,23 +25,34 @@ def idle(armMotor, clawMotor):
     armMotor.set_position(statics.armIdle)
     clawMotor.set_position(statics.clawIdle)
 
-def pickup(armMotor, clawMotor):
-    idle(armMotor, clawMotor)
+def pickup(leftMotor, rightMotor, doorMotor):
+#     idle(armMotor, clawMotor)
+#     sleep(1)
+#     clawMotor.set_position(statics.clawOpen) # 1. open claw
     sleep(1)
-    clawMotor.set_position(statics.clawOpen) # 1. open claw
+    movement.moveBackwards(leftMotor, rightMotor)
     sleep(2)
-    armMotor.set_position(statics.armPickup) # 2. lower arm
+    doorMotor.set_position(-100)
     sleep(2)
-    clawMotor.set_position(statics.clawClose) # 3. close claw
-    sleep(1)
-    armMotor.set_position(statics.armDrop) # 4. bring cube up over the storage unit
+    movement.init_motor(leftMotor)
+    movement.init_motor(rightMotor)
+    sleep(0.5)
+    leftMotor.set_position_relative(540)
+    rightMotor.set_position_relative(540)
     sleep(2)
-    clawMotor.set_position(statics.clawOpen) # 5. drop cube into storage unit
-    sleep(1)
-    idle(armMotor, clawMotor)
+    doorMotor.set_position(0)
+#     sleep(1)
+#     armMotor.set_position(statics.armDrop) # 4. bring cube up over the storage unit
+#     sleep(2)
+#     clawMotor.set_position(statics.clawOpen) # 5. drop cube into storage unit
+#     sleep(1)
+#     idle(armMotor, clawMotor)
     
 def unload(armMotor, clawMotor):
-    idle(armMotor, clawMotor)
-    armMotor.set_position(statics.armUnload)
-    sleep(4)
-    idle(armMotor, clawMotor)
+    armMotor.set_position(statics.armPickup)
+    sleep(1)
+    clawMotor.set_position(statics.clawOpen)
+    # idle(armMotor, clawMotor)
+    # armMotor.set_position(statics.armUnload)
+    # sleep(4)
+    # idle(armMotor, clawMotor)

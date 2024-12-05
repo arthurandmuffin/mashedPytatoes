@@ -1,3 +1,6 @@
+# Rotate and take distances from walls to triangulate current position on map
+# Used to self correct during nav to avoid noise / error compounding
+
 from utils import calculations, movement, maps, statics
 
 from statistics import mean

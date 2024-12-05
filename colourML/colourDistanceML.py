@@ -1,3 +1,5 @@
+# Trains a decision tree, given RGB values, to determine whether meausred target is cube or floor
+
 from sklearn.tree import DecisionTreeClassifier, export_text
 import math
 

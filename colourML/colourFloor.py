@@ -1,3 +1,5 @@
+# Trains a decision tree, given RGB values, to determine colour of floor
+
 from sklearn.tree import DecisionTreeClassifier, export_text
 
 filenames = ["greenFloor.txt", "gridlines.txt", "water.txt"]

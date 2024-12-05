@@ -1,3 +1,5 @@
+# Called by main.py, navigates the map, everything else is downstream from here
+
 from utils import maps, statics, movement
 
 import heapq
@@ -8,29 +10,31 @@ from time import sleep
 #   2. Flood edge lakes + unvisitable areas?
 #   3. Bridge?? Only visit on way back (extra thing to handle), recognize bridge (how?)
 
-def Navigatefuckingeverything(leftMotor, rightMotor, armMotor, clawMotor, leftCS, rightCS, frontUS, sideUS, navMap):
-    shitCount = 0
+#Main navigation function (call from main)
+def NavigateMap(leftMotor, rightMotor, armMotor, clawMotor, leftCS, rightCS, frontUS, sideUS, navMap):
+    poopCount = 0
     pathQueue = []
-    #movement.moveForwardUntilObstacle(leftMotor, rightMotor, armMotor, clawMotor, frontUS, sideUS, leftCS, rightCS, None, navMap) #need to change this to handle distance too?, pass shitcount
+    movement.moveForwardUntilObstacle(leftMotor, rightMotor, armMotor, clawMotor, frontUS, sideUS, leftCS, rightCS, None, navMap) #need to change this to handle distance too?, pass shitcount
     pathQueue = visitNearestUnknown(navMap)
-    while shitCount <= 6:
+    while poopCount <= 6:
         if len(pathQueue) == 0:
             pathQueue = visitNearestUnknown(navMap)
             continue
         nextPath = pathQueue.pop()
-        #movement.moveForwardUntilObstacle(leftMotor, rightMotor, frontUS, sideUS, leftCS, rightCS, getDistance(nextPath), navMap)
+        movement.moveForwardUntilObstacle(leftMotor, rightMotor, frontUS, sideUS, leftCS, rightCS, getDistance(nextPath), navMap)
         if len(pathQueue) != 0:
             reorient(nextPath, pathQueue[0])
-        shitCount += 1
+        poopCount += 1
     
-    #go back? set home coords statics
-    #print(pathToCell(navMap, (10, 10)))
-    #pathHome = pathPlanToPaths(pathToCell(navMap, (10, 10)))
-    #print(pathHome)
-    #while len(pathHome) != 0:
-        #movement.moveForwardUntilObstacle(pathHome.pop())
+    #Return to start
+    pathHome = pathPlanToPaths(pathToCell(navMap, (10, 10)))
+    print(pathHome)
+    while len(pathHome) != 0:
+        nextPath = pathHome.pop(0)
+        movement.moveForwardUntilObstacle(nextPath)
+        reorient(nextPath, pathHome[0])
 
-#rewrite this shit, straight ass
+#Get path to nearest unknown cluster
 def visitNearestUnknown(navMap):
     pathPlan = None
     random = 10
@@ -57,6 +61,7 @@ def visitNearestUnknown(navMap):
     print(pathPlan)
     return pathPlanToPaths(pathPlan)
     
+#Largest cluster
 def largestClump(navMap, unvisitedCells):
     visited = set() #processed, not actually visited
     largestClump = [] #for now just take 1st element as target, possible optimisation to avoid turns?
@@ -86,17 +91,7 @@ def largestClump(navMap, unvisitedCells):
     
     return largestClump
 
-def manhattanDistance(coord1, coord2):
-    return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
-                
-def neighbours(navMap, grid):
-    x, y = grid
-    res = []
-    for coord in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]:
-        if navMap.ValidGrid(coord):
-            res.append(coord)
-    return res
-    
+# Nearby unvisited cells based on current location
 def nearbyUnvisitedCells(navMap, distanceThreshold, tried):
     res = []
     print("X: " + str(navMap.currentLocationX) + "   Y: " + str(navMap.currentLocationY))
@@ -107,6 +102,7 @@ def nearbyUnvisitedCells(navMap, distanceThreshold, tried):
                 res.append((cellX, cellY))
     return res
 
+# A* pathfinding algorithm, takes into account of space needed when rotating vs straight line
 def pathToCell(navMap, target):
     initX, initY = navMap.currentLocationX, navMap.currentLocationY
     initAxis = orientationToAxis(navMap.currentOrientation)
@@ -211,3 +207,15 @@ def getDistance(path):
     coord1 = path[0]
     coord2 = path[1]
     return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
+
+
+def manhattanDistance(coord1, coord2):
+    return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
+                
+def neighbours(navMap, grid):
+    x, y = grid
+    res = []
+    for coord in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]:
+        if navMap.ValidGrid(coord):
+            res.append(coord)
+    return res

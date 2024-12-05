@@ -1,22 +1,19 @@
+# Obstacle Analysis
+
 from time import sleep
 
 from . import statics
 from . import movement
 from . import colour
 
-def obstacleCloserThan(usSensor, distance):
-    return usSensor.get_value()
-
-def colourSensorObstacles():
-    return
-
+# Rotate the robot, attempt to view cube with colour sensor, return cube colour
 def getObstacleColour(leftMotor, rightMotor, leftCS, rightCS):
     count = 0
     for i in range(7):
         movement.rotateLeft8(leftMotor, rightMotor)
-        sleep(0.5)
+        sleep(0.8)
         rightRGB = rightCS.get_value()
-        print(rightRGB)
+        print("OBS Right rgb: " + str(rightRGB))
         rightCSReading = colour.getObject(rightRGB)
         print(rightCSReading)
         if isinstance(rightCSReading, statics.CubeColours):
@@ -24,13 +21,13 @@ def getObstacleColour(leftMotor, rightMotor, leftCS, rightCS):
             if count > 1 or rightCSReading == statics.CubeColours.YELLOW or rightCSReading == statics.CubeColours.ORANGE:
                 for _ in range(i):
                     movement.rotateFromRightColor(leftMotor, rightMotor)
-                    sleep(0.5)
+                    sleep(0.7)
                 movement.moveBackwards(leftMotor, rightMotor)
                 return rightCSReading
 
     for i in range(7):
         movement.rotateFromRightColor(leftMotor, rightMotor)
-        sleep(0.5)
+        sleep(0.7)
     movement.moveBackwards(leftMotor, rightMotor)
     sleep(1)
     
@@ -39,7 +36,7 @@ def getObstacleColour(leftMotor, rightMotor, leftCS, rightCS):
         movement.rotateRight8(leftMotor, rightMotor)
         sleep(0.5)
         leftRGB = leftCS.get_value()
-        print(leftRGB)
+        print("OBS Left RGB: " + str(leftRGB))
         leftCSReading = colour.getObject(leftRGB)
         print(rightCSReading)
         if isinstance(leftCSReading, statics.CubeColours):

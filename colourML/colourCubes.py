@@ -1,3 +1,5 @@
+# Trains a decision tree, given RGB values, to determine colour of cubes
+
 from sklearn.tree import DecisionTreeClassifier, export_text
 
 filenames = ["greenCube.txt", "purpleCube.txt", "orangeCube.txt", "yellowCube.txt"]

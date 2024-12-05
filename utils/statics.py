@@ -1,3 +1,5 @@
+#Statics files for constants used throughout the program
+
 from enum import Enum, auto
 import math
 
@@ -81,12 +83,12 @@ WallDistanceDataPointCount = 20
 USSensorOffsetFromRobotCentre = 2 #distance from us sensor to centre of robot
 
 #Movement
-CruisingPower = -50
-CruisingSpeed = -100
+CruisingPower = 50
+CruisingSpeed = 100
 DeviationLimit = 1
 TrackingThreshold = 20
-PickupThreshold = 5.5
-TheoryPickupThreshold = 11
+PickupThreshold = 4.1
+TheoryPickupThreshold = 7
 SpeedCorrectionFactor = 1.2
 CorrectionTimer = 1
 DistanceTravelledCorrectionFactor = 1

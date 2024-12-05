@@ -1,3 +1,5 @@
+#File to run for full map navigation
+
 from utils import movement, colour, statics, maps
 from time import sleep
 
@@ -18,8 +20,8 @@ rightCS = EV3ColorSensor(3)
 
 navMap = maps.Map(48, 48, 25, 25, 90)
 
-#crane.idle(ARM, CLAW)
+crane.idle(ARM, CLAW)
 
-navigation.Navigatefuckingeverything(leftMotor, rightMotor, ARM, CLAW, leftCS, rightCS, frontUS, sideUS, navMap)
+navigation.NavigateMap(leftMotor, rightMotor, ARM, CLAW, leftCS, rightCS, frontUS, sideUS, navMap)
 
-#movement.stopMotors(leftMotor, rightMotor)
+movement.stopMotors(leftMotor, rightMotor)

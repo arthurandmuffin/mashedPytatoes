@@ -1,3 +1,10 @@
+# Custom map object, made out of map cells that can be marked as visited, water, obstacle
+# Features: 1. Mark current position as visited
+#           2. Mark travelled path as visited given travelled distance and current location
+#           3. Mark water/obstacle location based on current location
+#           4. Line trace nearby water spots on the map to form solid boundary
+#           5. Flood fill lakes so they no longer count as unvisited cells
+
 from . import statics
 
 import math, statistics
